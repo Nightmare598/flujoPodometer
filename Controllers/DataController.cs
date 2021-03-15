@@ -11,12 +11,12 @@ namespace apiProductor.Controllers
     [ApiController]
     public class DataController : ControllerBase
     {
+        string connectionString = "Endpoint=sb://queuepodometer.servicebus.windows.net/;SharedAccessKeyName=Enviar;SharedAccessKey=l3MR/PLAWz+VPg0cxR3dyPqQgonjPpioGMrYmtSg67k=;EntityPath=cola1";
+        string queueName = "cola1";
+        //string mensaje = JsonConvert.SerializeObject(data);
+        [HttpPost]
         public async Task<string> PostAsync([FromBody] Data data)
         {
-            string connectionString = "Endpoint=sb://queuepodometer.servicebus.windows.net/;SharedAccessKeyName=Escuchar;SharedAccessKey=vItB/2VHDRn/bnv+xSYISzJpbTQm7/W7oJck76Jjn58=;EntityPath=cola1";
-            string queueName = "cola1";
-            string mensaje = JsonConvert.SerializeObject(data);
-
             // create a Service Bus client 
             await using (ServiceBusClient client = new ServiceBusClient(connectionString))
             {
@@ -24,7 +24,7 @@ namespace apiProductor.Controllers
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage(mensaje);
+                ServiceBusMessage message = new ServiceBusMessage(JsonConvert.SerializeObject(data));
 
                 // send the message
                 await sender.SendMessageAsync(message);
